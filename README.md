@@ -22,23 +22,20 @@ It will generate six inductive dataset folders (wnv1,wnv2,wnv3,fbv1,fbv2,fbv3) i
   ### Navigation Support
  ```
 ── TMR_code
-    ├── Model
-    │      ├── UAN
-    │      └──  RL
-    │           ├── pg.py
-    │           ├── pn.py
-    │           ├── rs.py
-    │           └── beam_search.py
-    ├── ruleN
-    │      ├── auc_apply_rules.sh
-    │      ├── get_auc_results.py
-    │      ├── get_ranking_results.py
-    │      ├── auc_apply_rules.sh
-    │      ├── auc_apply_rules.sh
-    │      ├── auc_apply_rules.sh
-    │      ├── auc_apply_rules.sh
-    │      ├── auc_apply_rules.sh
-    │      └── vis.py
+    ├── dgl
+    │      ├── __init__.py
+    │      ├── aggregators.py
+    │      ├── graph_classifier.py
+    │      ├── layers.py
+    │      └── rgcn_model.py
+    ├── rl/graph_search
+    │      ├── Discriminator.py
+    │      ├── Sampling.py
+    │      ├── beam_search.py
+    │      ├── pg.py
+    │      ├── pn.py
+    │      ├── rule_learning.py
+    │      └── rule_application.py
     ├──  utils
     │      ├── clean_data.py
     │      ├── data_utils.py
