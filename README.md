@@ -11,3 +11,54 @@ Run the following commands to install the required packages:
 ```
 pip install -r requirements.txt
 ```
+
+### Data
+```
+unzip data.zip
+```
+It will generate six inductive dataset folders (wnv1,wnv2,wnv3,fbv1,fbv2,fbv3) in the ./data directory. Our transductive data used in the experiments as well as the different embedding files can be found here: https://fileserver.ukp.informatik.tu-darmstadt.de/starsem18-multimodalKB/.
+
+  
+  ### Navigation Support
+ ```
+── TMR_code
+    ├── Model
+    │      ├── UAN
+    │      └──  RL
+    │           ├── pg.py
+    │           ├── pn.py
+    │           ├── rs.py
+    │           └── beam_search.py
+    ├──  Utils
+    │      ├── ops.py
+    │      └── vis.py
+    ├──  Configs
+    │      ├── WN9.sh
+    │      └── FB.sh    
+    ├──data_utils.py
+    ├──experiment.sh  
+    ├──eval.py
+    ├──README.md
+    ├──entity2typeid.pkl    
+    ├──adj_list.pkl
+    ├──knowledge_graph.py
+    └──requirements.txt
+ ```
+  Furthermore, for your convenience, the training and testing commands of the code are as follows： 
+  ### Train and test models
+  1. Train embedding-based models
+```
+./experiment-emb.sh configs/<dataset>-<emb_model>.sh --train <gpu-ID>
+```
+2. Train our model
+```
+./experiment.sh configs/<dataset>.sh --train <gpu-ID>
+```
+3. Test our model 
+```
+./experiment.sh configs/<dataset>.sh --inference <gpu-ID>
+```
+4. If you want to print the inference path, please use the following command.
+```
+./experiment-rs.sh configs/<dataset>-rs.sh --inference <gpu-ID> --save_beam_search_paths
+```
