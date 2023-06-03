@@ -44,21 +44,14 @@ It will generate six inductive dataset folders (wnv1,wnv2,wnv3,fbv1,fbv2,fbv3) i
     ├──knowledge_graph.py
     └──requirements.txt
  ```
-  Furthermore, for your convenience, the training and testing commands of the code are as follows： 
-  ### Train and test models
-  1. Train embedding-based models
+Furthermore, for your convenience, the training and testing commands of the code are as follows： 
+### Train and test models
+1. Train our model
 ```
-./experiment-emb.sh configs/<dataset>-<emb_model>.sh --train <gpu-ID>
+python src/experiments.py --train --dataset <dataset-name> --gpu <gpu-ID>
 ```
-2. Train our model
+
+2. Evaluate our model 
 ```
-./experiment.sh configs/<dataset>.sh --train <gpu-ID>
-```
-3. Test our model 
-```
-./experiment.sh configs/<dataset>.sh --inference <gpu-ID>
-```
-4. If you want to print the inference path, please use the following command.
-```
-./experiment-rs.sh configs/<dataset>-rs.sh --inference <gpu-ID> --save_beam_search_paths
+python src/experiments.py --inference --dataset <dataset-name> --gpu <gpu-ID>
 ```
