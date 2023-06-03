@@ -29,18 +29,29 @@ It will generate six inductive dataset folders (wnv1,wnv2,wnv3,fbv1,fbv2,fbv3) i
     │           ├── pn.py
     │           ├── rs.py
     │           └── beam_search.py
-    ├──  Utils
-    │      ├── ops.py
+    ├── ruleN
+    │      ├── auc_apply_rules.sh
+    │      ├── get_auc_results.py
+    │      ├── get_ranking_results.py
+    │      ├── auc_apply_rules.sh
+    │      ├── auc_apply_rules.sh
+    │      ├── auc_apply_rules.sh
+    │      ├── auc_apply_rules.sh
+    │      ├── auc_apply_rules.sh
     │      └── vis.py
-    ├──  Configs
-    │      ├── WN9.sh
-    │      └── FB.sh    
-    ├──data_utils.py
-    ├──experiment.sh  
+    ├──  utils
+    │      ├── clean_data.py
+    │      ├── data_utils.py
+    │      ├── dgl_utils.py
+    │      ├── graph_utils.py
+    │      ├── initialization_utils.py
+    │      └── prepapre_meta_data.py   
+    ├──UGAN.py
+    ├──experiment.sh
+    ├──learning_framework.py 
     ├──eval.py
+    ├──parse_args.py
     ├──README.md
-    ├──entity2typeid.pkl    
-    ├──adj_list.pkl
     ├──knowledge_graph.py
     └──requirements.txt
  ```
