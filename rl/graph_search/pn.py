@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+from Discriminator import predict
 import src.utils.ops as ops
 from src.utils.ops import var_cuda, zeros_var_cuda
 
