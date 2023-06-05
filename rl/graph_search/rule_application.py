@@ -3,23 +3,9 @@ import numpy as np
 import pandas as pd
 from collections import Counter
 
-from temporal_walk import store_edges
-
 
 def filter_rules(rules_dict, min_conf, min_body_supp, rule_lengths):
-    """
-    Filter for rules with a minimum confidence, minimum body support, and
-    specified rule lengths.
-
-    Parameters.
-        rules_dict (dict): rules
-        min_conf (float): minimum confidence value
-        min_body_supp (int): minimum body support value
-        rule_lengths (list): rule lengths
-
-    Returns:
-        new_rules_dict (dict): filtered rules
-    """
+   
 
     new_rules_dict = dict()
     for k in rules_dict:
@@ -37,22 +23,7 @@ def filter_rules(rules_dict, min_conf, min_body_supp, rule_lengths):
 
 
 def get_window_edges(all_data, test_query_ts, learn_edges, window=-1):
-    """
-    Get the edges in the data (for rule application) that occur in the specified time window.
-    If window is 0, all edges before the test query timestamp are included.
-    If window is -1, the edges on which the rules are learned are used.
-    If window is an integer n > 0, all edges within n timestamps before the test query
-    timestamp are included.
-
-    Parameters:
-        all_data (np.ndarray): complete dataset (train/valid/test)
-        test_query_ts (np.ndarray): test query timestamp
-        learn_edges (dict): edges on which the rules are learned
-        window (int): time window used for rule application
-
-    Returns:
-        window_edges (dict): edges in the window for rule application
-    """
+ 
 
     if window > 0:
         mask = (all_data[:, 3] < test_query_ts) * (
@@ -69,22 +40,7 @@ def get_window_edges(all_data, test_query_ts, learn_edges, window=-1):
 
 
 def match_body_relations(rule, edges, test_query_sub):
-    """
-    Find edges that could constitute walks (starting from the test query subject)
-    that match the rule.
-    First, find edges whose subject match the query subject and the relation matches
-    the first relation in the rule body. Then, find edges whose subjects match the
-    current targets and the relation the next relation in the rule body.
-    Memory-efficient implementation.
 
-    Parameters:
-        rule (dict): rule from rules_dict
-        edges (dict): edges for rule application
-        test_query_sub (int): test query subject
-
-    Returns:
-        walk_edges (list of np.ndarrays): edges that could constitute rule walks
-    """
 
     rels = rule["body_rels"]
     # Match query subject and first body relation
@@ -117,21 +73,7 @@ def match_body_relations(rule, edges, test_query_sub):
 
 
 def match_body_relations_complete(rule, edges, test_query_sub):
-    """
-    Find edges that could constitute walks (starting from the test query subject)
-    that match the rule.
-    First, find edges whose subject match the query subject and the relation matches
-    the first relation in the rule body. Then, find edges whose subjects match the
-    current targets and the relation the next relation in the rule body.
 
-    Parameters:
-        rule (dict): rule from rules_dict
-        edges (dict): edges for rule application
-        test_query_sub (int): test query subject
-
-    Returns:
-        walk_edges (list of np.ndarrays): edges that could constitute rule walks
-    """
 
     rels = rule["body_rels"]
     # Match query subject and first body relation
@@ -160,17 +102,6 @@ def match_body_relations_complete(rule, edges, test_query_sub):
 
 
 def get_walks(rule, walk_edges):
-    """
-    Get walks for a given rule. Take the time constraints into account.
-    Memory-efficient implementation.
-
-    Parameters:
-        rule (dict): rule from rules_dict
-        walk_edges (list of np.ndarrays): edges from match_body_relations
-
-    Returns:
-        rule_walks (pd.DataFrame): all walks matching the rule
-    """
 
     df_edges = []
     df = pd.DataFrame(
@@ -210,16 +141,7 @@ def get_walks(rule, walk_edges):
 
 
 def get_walks_complete(rule, walk_edges):
-    """
-    Get complete walks for a given rule. Take the time constraints into account.
 
-    Parameters:
-        rule (dict): rule from rules_dict
-        walk_edges (list of np.ndarrays): edges from match_body_relations
-
-    Returns:
-        rule_walks (pd.DataFrame): all walks matching the rule
-    """
 
     df_edges = []
     df = pd.DataFrame(
@@ -258,16 +180,7 @@ def get_walks_complete(rule, walk_edges):
 
 
 def check_var_constraints(var_constraints, rule_walks):
-    """
-    Check variable constraints of the rule.
 
-    Parameters:
-        var_constraints (list): variable constraints from the rule
-        rule_walks (pd.DataFrame): all walks matching the rule
-
-    Returns:
-        rule_walks (pd.DataFrame): all walks matching the rule including the variable constraints
-    """
 
     for const in var_constraints:
         for i in range(len(const) - 1):
@@ -282,22 +195,7 @@ def check_var_constraints(var_constraints, rule_walks):
 def get_candidates(
     rule, rule_walks, test_query_ts, cands_dict, score_func, args, dicts_idx
 ):
-    """
-    Get from the walks that follow the rule the answer candidates.
-    Add the confidence of the rule that leads to these candidates.
 
-    Parameters:
-        rule (dict): rule from rules_dict
-        rule_walks (pd.DataFrame): rule walks (satisfying all constraints from the rule)
-        test_query_ts (int): test query timestamp
-        cands_dict (dict): candidates along with the confidences of the rules that generated these candidates
-        score_func (function): function for calculating the candidate score
-        args (list): arguments for the scoring function
-        dicts_idx (list): indices for candidate dictionaries
-
-    Returns:
-        cands_dict (dict): updated candidates
-    """
 
     max_entity = "entity_" + str(len(rule["body_rels"]))
     cands = set(rule_walks[max_entity])
@@ -319,20 +217,7 @@ def get_candidates(
 def save_candidates(
     rules_file, dir_path, all_candidates, rule_lengths, window, score_func_str
 ):
-    """
-    Save the candidates.
 
-    Parameters:
-        rules_file (str): name of rules file
-        dir_path (str): path to output directory
-        all_candidates (dict): candidates for all test queries
-        rule_lengths (list): rule lengths
-        window (int): time window used for rule application
-        score_func_str (str): scoring function
-
-    Returns:
-        None
-    """
 
     all_candidates = {int(k): v for k, v in all_candidates.items()}
     for k in all_candidates:
@@ -346,16 +231,7 @@ def save_candidates(
 
 
 def verbalize_walk(walk, data):
-    """
-    Verbalize walk from rule application.
 
-    Parameters:
-        walk (pandas.core.series.Series): walk that matches the rule body from get_walks
-        data (grapher.Grapher): graph data
-
-    Returns:
-        walk_str (str): verbalized walk
-    """
 
     l = len(walk) // 3
     walk = walk.values.tolist()
