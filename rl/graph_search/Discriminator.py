@@ -1,69 +1,91 @@
-# -*- coding: utf-8 -*-
+
 from __future__ import division
 
 import collections
 import numpy as np
 import sys
-import tensorflow as tf
 import time
 import math
-from Bi-BFS.Bi-BFS import BFS
-from BFS.KB import KB
 from itertools import count
 from networks import discriminator_nn
-#from rule_learning import Rule_Learner
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from Sampling import sampling  
+
 
 LAMBDA = 5  # Gradient penalty lambda hyper-parameter.
 
 
-class Discriminator(object):
-    """docstring for Discriminator"""
 
+class Discriminator(nn.Module):
     def __init__(self, batch_size, embedding_dim, learning_rate=0.001):
-        self.initializer = tf.contrib.layers.xavier_initializer()
-        # hyper-parameters are settled in utils.py
-        # default state_dim = 200, action_space = 400(total 400 relations)
-        with tf.variable_scope('discriminator') as scope:
-            # inputs are embeddings not paths
-            self.task = tf.placeholder(tf.string)
-            self.real_inputs = tf.placeholder(tf.float32, [batch_size, 1, embedding_dim], name='real_inputs')
+        super(Discriminator, self).__init__()
 
-            self.fake_inputs = tf.placeholder(tf.float32, [batch_size, 1, embedding_dim], name='fake_inputs')
-            # normalize_real = tf.nn.l2_normalize(real_inputs.reshape((bach_size*embedding_dim)),0)
-            # normalize_fake = tf.nn.l2_normalize(fake_inputs.reshape((bach_size*embedding_dim)),0)
-            # self.gen_reward = tf.reduce_sum(tf.multiply(normalize_real,normalize_fake))
+        self.initializer = nn.init.xavier_uniform_
+        self.task = ''
+        
+        self.real_inputs = torch.zeros(batch_size, 1, embedding_dim)
+        self.fake_inputs = torch.zeros(batch_size, 1, embedding_dim)
+        
+        self.disc_real = nn.Sequential(
+            nn.Linear(embedding_dim, 64),
+            nn.ReLU(),
+            nn.Linear(64, 1),
+        )
+        
+        self.disc_fake = nn.Sequential(
+            nn.Linear(embedding_dim, 64),
+            nn.ReLU(),
+            nn.Linear(64, 1),
+        )
+        
+        self.optimizer = optim.SGD(self.parameters(), lr=learning_rate)
+    
+    def forward(self, inputs):
+        disc_real_out = self.disc_real(inputs)
+        disc_fake_out = self.disc_fake(inputs)
+        return disc_real_out, disc_fake_out
+    
+    def predict(self, real, fake):
+        disc_real_out, disc_fake_out = self.forward(real)
+        original_disc_cost = torch.mean(disc_fake_out) - torch.mean(disc_real_out)
+        
+        alpha = torch.rand(real.shape[0], 1, 1)
+        differences = fake - real
+        interpolate = real + (alpha * differences)
 
-            disc_real = discriminator_nn(self.real_inputs, embedding_dim, self.task, self.initializer)
-            scope.reuse_variables()
-            disc_fake = discriminator_nn(self.fake_inputs, embedding_dim, self.task, self.initializer)
-            # original critic loss
-            original_disc_cost = tf.reduce_mean(disc_fake) - tf.reduce_mean(disc_real)
+        interpolate_out = self.forward(interpolate)[0]
+        gradients = torch.autograd.grad(outputs=interpolate_out, inputs=interpolate,
+                                        grad_outputs=torch.ones(interpolate_out.size()),
+                                        create_graph=True, retain_graph=True)[0]
+        slopes = torch.sqrt(torch.sum(gradients ** 2, dim=[1, 2]))
+        gradient_penalty = torch.mean((slopes - 1.) ** 2)
 
-            # WGAN lipschitz-penalty
-            alpha = tf.random_uniform(shape=[batch_size, 1, 1], minval=0., maxval=1.)
-            differences = self.fake_inputs - self.real_inputs
-            interpolate = self.real_inputs + (alpha * differences)
+        disc_cost = original_disc_cost + LAMBDA * gradient_penalty
+        gen_reward = torch.mean(disc_fake_out)
 
-            # tf.gradients(ys,xs)
-            grad = \
-            tf.gradients(discriminator_nn(interpolate, embedding_dim, self.task, self.initializer)[0], [interpolate])[0]
-            slopes = tf.sqrt(tf.reduce_sum(tf.square(grad), reduction_indices=[1, 2]))
-            gradient_penalty = tf.reduce_mean((slopes - 1.) ** 2)
+        return disc_cost, gen_reward
+    
+    def update(self, real, fake):
+        self.optimizer.zero_grad()
+        loss, _ = self.predict(real, fake)
+        loss.backward()
+        self.optimizer.step()
+        
+        return loss.item()
 
-            # total loss for D and G
-            self.disc_cost = (original_disc_cost + LAMBDA * gradient_penalty)
-            self.gen_reward = tf.reduce_mean(disc_fake)
+    def set_task(self, task):
+        self.task = task
 
-            self.optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
-            self.train_op = self.optimizer.minimize(self.disc_cost)
+    def set_real_inputs(self, real_inputs):
+        self.real_inputs = real_inputs
 
-    def predict(self, real, fake, sess=None):
-        sess = sess or tf.get_default_session()
-        return sess.run([self.disc_cost, self.gen_reward],
-                        {self.task: 'test', self.real_inputs: real, self.fake_inputs: fake})
+    def set_fake_inputs(self, fake_inputs):
+        self.fake_inputs = fake_inputs
 
-    def update(self, real, fake, sess=None):
-        sess = sess or tf.get_default_session()
-        _, loss = sess.run([self.train_op, self.disc_cost],
-                           {self.task: 'train', self.real_inputs: real, self.fake_inputs: fake})
-        return loss
+    def train(self):
+        self.train()
+
+    def eval(self):
+        self.eval()
