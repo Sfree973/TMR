@@ -1,7 +1,4 @@
-"""
-File baseed off of dgl tutorial on RGCN
-Source: https://github.com/dmlc/dgl/tree/master/examples/pytorch/rgcn
-"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
