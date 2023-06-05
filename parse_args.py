@@ -12,8 +12,8 @@ parser.add_argument('--train', action='store_true',
 parser.add_argument('--inference', action='store_true',
                     help='run knowledge graph inference (default: False)')
 
-parser.add_argument('--dataset', type=str, default='WN-MBE',
-                    help='dataset (default: WN-MBE, FB-MBE, NELL-MBE)')
+parser.add_argument('--dataset', type=str, default='fbv1',
+                    help='dataset (default: fbv1, fbv2, fbv3)')
 parser.add_argument('--data_dir', type=str, default=os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data/'),
                     help='directory where the knowledge graph data is stored (default: None)')
 parser.add_argument('--model_root_dir', type=str, default=os.path.join(os.path.dirname(os.path.dirname(__file__)), 'model'),
@@ -129,17 +129,7 @@ parser.add_argument('--attn', type=bool, default=True,
                     help='If true, the model will use feedback attention (default: True)')
 
 # model details
-# ARGCN
-parser.add_argument('--rel_agg', type=str, default='sum',
-                    help='The pooling function of the relational convolutional layer (the first layer) (default: sum)')
-parser.add_argument('--ent_agg', type=str, default='sum',
-                    help='The aggregation method of the stacked layers (default: sum)')
-parser.add_argument('--neigh_dropout', type=float, default=0.3,
-                    help='Dropout rate of neighboring entities (default: 0.3)')
-parser.add_argument('--node_dropout', type=float, default=0.3,
-                    help='Dropout rate of entity embeddings (default: 0.3)')
-parser.add_argument('--gcn_layer', type=int, default=1,
-                    help='GCN layer (default: 1)')
+
 # Augmentation link
 parser.add_argument('--aug_link_threshold', type=float, default=0.3,
                     help='Confidence threshold value (default: 0.3)')
