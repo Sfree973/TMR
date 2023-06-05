@@ -2,10 +2,6 @@ from .rgcn_model import RGCN
 from dgl import mean_nodes
 import torch.nn as nn
 import torch
-"""
-File based off of dgl tutorial on RGCN
-Source: https://github.com/dmlc/dgl/tree/master/examples/pytorch/rgcn
-"""
 
 
 class GraphClassifier(nn.Module):
