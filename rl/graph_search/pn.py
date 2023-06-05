@@ -27,6 +27,7 @@ class GraphSearchPolicy(nn.Module):
         # Set policy network modules
         self.define_modules()
         self.initialize_modules()
+        self.max_dynamic_action_size = args.max_dynamic_action_size
 
         # Fact network modules
         self.fn = None
@@ -313,6 +314,26 @@ class GraphSearchPolicy(nn.Module):
         action_mask_max = action_mask.max()
         assert (action_mask_min == 0 or action_mask_min == 1)
         assert (action_mask_max == 0 or action_mask_max == 1)
+        
+    def get_dynamic_action_space(self, e_space, r_space, action_mask, e_b, relation_att):
+        # bks -> bucket_size, ass -> action_space_size
+        (bks, ass) = e_space.shape
+        additional_action_space_size = min(int(ass / self.dynamic_split_bound) + 1, self.max_dynamic_action_size)
+        additional_relation_size = int(additional_action_space_size / self.avg_entity_per_relation) + 1
+        # bks x additional_relation_size
+        relation_idx = torch.multinomial(relation_att, additional_relation_size)
+        # bks x additional_relation_size x |E|
+        S = self.fn.forward(e_b.repeat_interleave(additional_relation_size, dim=0), relation_idx.view(bks * additional_relation_size), self.fn_kg).view(bks, additional_relation_size, self.fn_kg.num_entities)
+        # idx -> bks x additional_relation_size x self.avg_entity_per_relation
+        _, idx = torch.topk(S, self.avg_entity_per_relation, dim=-1)
+        # bks x (additional_relation_size * self.avg_entity_per_relation)
+        new_r_space = relation_idx.repeat_interleave(self.avg_entity_per_relation, dim=1)
+        new_e_space = idx.view(bks, -1)
+        new_action_mask = torch.ones(bks, additional_relation_size * self.avg_entity_per_relation).cuda()
+        e_space = torch.cat([e_space, new_e_space], dim=-1)
+        r_space = torch.cat([r_space, new_r_space], dim=-1)
+        action_mask = torch.cat([action_mask, new_action_mask], dim=-1)
+        return e_space, r_space, action_mask
 
     def get_action_embedding(self, action, kg):
         # rule
