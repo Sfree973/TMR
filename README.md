@@ -17,7 +17,7 @@ unzip data.zip
 ```
 It will generate six initial version (wnv1,wnv2,wnv3,fbv1,fbv2,fbv3) in the ./data directory. Our transductive data used in the experiments as well as the different embedding files can be found here: https://fileserver.ukp.informatik.tu-darmstadt.de/starsem18-multimodalKB/.
 
-###Cite
+### Cite
 If you use the code, please cite this paper:
 
 Shangfei Zheng, Hongzhi Yin, Tong Chen, Quoc Viet Hung Nguyen, Wei Chen, and Lei Zhao. Do as I can, not as I get: Topology-aware multi-hop reasoning on multi-modal knowledge graphs. IEEE Transactions on Knowledge and Data Engineering, 2025.
