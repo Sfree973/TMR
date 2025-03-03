@@ -18,40 +18,6 @@ unzip data.zip
 ```
 It will generate six inductive dataset folders (wnv1,wnv2,wnv3,fbv1,fbv2,fbv3) in the ./data directory. Our transductive data used in the experiments as well as the different embedding files can be found here: https://fileserver.ukp.informatik.tu-darmstadt.de/starsem18-multimodalKB/.
 
-  
-  ### Navigation Support
- ```
-── TMR_code
-    ├── dgl
-    │      ├── __init__.py
-    │      ├── aggregators.py
-    │      ├── graph_classifier.py
-    │      ├── layers.py
-    │      └── rgcn_model.py
-    ├── rl/graph_search
-    │      ├── Discriminator.py
-    │      ├── Sampling.py
-    │      ├── beam_search.py
-    │      ├── pg.py
-    │      ├── pn.py
-    │      ├── rule_learning.py
-    │      └── rule_application.py
-    ├──  utils
-    │      ├── clean_data.py
-    │      ├── data_utils.py
-    │      ├── dgl_utils.py
-    │      ├── graph_utils.py
-    │      ├── initialization_utils.py
-    │      └── prepapre_meta_data.py   
-    ├──UGAN.py
-    ├──experiment.sh
-    ├──learning_framework.py 
-    ├──eval.py
-    ├──parse_args.py
-    ├──README.md
-    ├──knowledge_graph.py
-    └──requirements.txt
- ```
 Furthermore, for your convenience, the training and testing commands of the code are as follows： 
 ### Train and test models
 1. Train our model
